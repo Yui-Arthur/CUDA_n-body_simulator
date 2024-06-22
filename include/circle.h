@@ -30,6 +30,7 @@ class circle{
             num_trians = num_segments - 2;
             printf("circle init success\n");
         }
+        
         void clear_VAO_VBO(){
             for(int i=0; i<VAO.size(); i++){
                 glDeleteVertexArrays(1, VAO[i]);
@@ -40,7 +41,7 @@ class circle{
         void move(std::vector<glm::vec3> velocities){
             for(int i=0; i<circle_pointer.size(); i++){
                 
-                translation[i] = glm::translate(translation[i], (velocities[i] / 800.0f));
+                translation[i] = glm::translate(translation[i], (velocities[i] / up_scale));
                 center_pos[i] =  center_pos[i] + glm::vec4(velocities[i], 0.0f);
             }
 
@@ -48,16 +49,16 @@ class circle{
             return;
         }
 
-        void create_circle(float cx, float cy, float r, glm::vec3 c){
+        void create_circle(float cx, float cy, float vx, float vy, float r, glm::vec3 c){
             build_circle(cx, cy, r);
             bind_circle();
             color.push_back(c);
-            mass.push_back(800*r);
-            center_pos.push_back(glm::vec4(800*cx, 800*cy, 0.0f, 1.0f));
+            mass.push_back((r*100)*(r*100)*(r*100));
+            center_pos.push_back(glm::vec4(up_scale*cx, up_scale*cy, 0.0f, 1.0f));
             show_pos.push_back(glm::vec4(cx, cy, 0.0f, 1.0f));
             translation.push_back(glm::mat4(GLfloat(1.0f)));
         
-            printf("create_circle pos (%f, %f), mass %f\n", cx, cy, r);
+            printf("create_circle pos (%f, %f), vel (%f, %f), mass %f\n", cx, cy, vx, vy, r);
 
             // for(int i=0; i<num_trians*3; i++){
             //     printf("%f, %f, %f\n", circle_pointer[circle_pointer.size()-1][i], circle_pointer[circle_pointer.size()-1][i+1], circle_pointer[circle_pointer.size()-1][i+2]);
@@ -90,13 +91,17 @@ class circle{
 
                 glm::vec4 tmp(show_pos[i]);
                 tmp = translation[i] * tmp ;
-                printf("really pos %f, %f, %f\n", center_pos[i].x, center_pos[i].y, center_pos[i].z);
-                printf("normalize pos %f, %f, %f\n", center_pos[i].x / 800.f, center_pos[i].y / 800.f, center_pos[i].z / 800.f);
-                printf("show pos %f, %f, %f\n", tmp.x , tmp.y, center_pos[i].z);
+                // printf("really pos %f, %f, %f\n", center_pos[i].x, center_pos[i].y, center_pos[i].z);
+                // printf("normalize pos %f, %f, %f\n", center_pos[i].x / up_scale, center_pos[i].y / up_scale, center_pos[i].z / up_scale);
+                // printf("show pos %f, %f, %f\n", tmp.x , tmp.y, center_pos[i].z);
             }
             
         }
     private:
+
+        GLfloat up_scale = 3000.f; 
+        // GLfloat up_scale = 800.f; 
+
         void build_circle(float cx, float cy, float r)
         {
             float theta = 3.1415926 * 2 / float(num_segments);
